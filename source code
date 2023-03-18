@@ -1,0 +1,305 @@
+import pyttsx3
+import speech_recognition as sr
+import webbrowser
+import datetime
+import pyjokes
+import os
+import cv2
+import pyautogui
+import pyaudio
+import wikipedia
+import platform
+import time
+import smtplib
+import requests
+import json
+import  random
+from gtts import gTTS
+
+from bs4 import BeautifulSoup
+
+
+def sptext():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
+        try:
+            print("recognizing...")
+            data = recognizer.recognize_google(audio)
+            print(data)
+            return data
+        except sr.UnknownValueError:
+            print("Not able to understand")
+
+
+def speechtx(x):
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[1].id)
+    rate = engine.getProperty('rate')
+    engine.setProperty('rate', 150)
+    engine.say(x)
+    engine.runAndWait()
+
+def sendEmail(to, content):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.ehlo()
+    server.starttls()
+    server.login('mohammedummarfarhan@gmail.com', 'rawsdufc')
+    server.sendmail('mohammedummarfarhan@gmail.com', to, content)
+    server.close()
+
+
+
+
+if __name__ == '__main__':
+
+
+    while True:
+        data1 = sptext().lower()
+
+        if "your name" in data1:
+            name = " my name is jarvis, sir"
+            speechtx(name)
+        
+        elif "old are you" in data1:
+            age = "Am an Ai sir I dont have any age like other beings"
+            speechtx(age)
+        elif "introduce" in data1:
+            speechtx("The jarvis AI assistant projects aim to create a virtual assisitant similar in the marvel movies. the assistant can perform various task like voice commands,including recognizing, opening websites, searching for information and many more")
+
+        elif " time" in data1:
+            time = datetime.datetime.now().strftime("%I%M%p")
+            speechtx(time)
+        elif "libraries "  in data1:
+            speechtx("The project uses several libraries like os,cv2, SpeechRecognition, pyttsx3, pywhatkit and others")
+        elif 'youtube' in data1:
+            webbrowser.open("https://www.youtube.com/watch?v=TAtrPoaJ7gc&list=PL9gnSGHSqcnr_DxHsP7AW9ftq0AtAyYqJ&index=11")
+            speechtx("Please choose your browser, sir it shall navigate you to the youtube page that you had asked for")
+        elif 'college' in data1:
+            webbrowser.open("https://www.ruk.ac.in/results/")
+            speechtx("here you choose a browser sir, it will navigate you to you university page")
+        elif 'rider' in data1:
+            speechtx('playing the song Im a rider')
+            webbrowser.open('https://www.youtube.com/watch?v=pfVODjDBFxU')
+        elif "joke" in data1:
+            joke_1 = pyjokes.get_joke(language="en", category="all")
+            print(joke_1)
+            speechtx(joke_1)
+        elif "news" in data1:
+
+            # Fetch the article text from the URL
+            url = "https://www.hindustantimes.com/sports/wwe-news/wwe-includes-one-interesting-star-in-latest-poster-for-wrestlemania-39-101677832232054.html"
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, "html.parser")
+            article = soup.find("div", {"class": "storyDetail"})
+
+            # Extract the title and article text
+            title = article.find("h1").text
+            text = ""
+            for p in article.findAll("p"):
+                text += p.text
+
+            # Print the title and speak the article text aloud
+            print(title)
+            print(text)
+            tts = gTTS(text, lang="en")
+            tts.save("article.mp3")
+            os.system("start article.mp3")
+        elif "mentor" in data1:
+            speechtx("Your mentor is satish sir, Who is also HOD in RUCE and acted as a guide for this project")
+        elif 'group' in data1:
+            speechtx(
+                ' The following are the members are MD Umar farhan with a rollno 532, Md suhail with a roll no 529, somanth with a rollno 508 and finally aman with a rollno 508 . The group mentor is MR Satish sir')
+        elif "am I" in data1:
+            speechtx("You are a student of Rayalaseema University.")
+        elif "weather" in data1:
+
+            # OpenWeatherMap API key
+            api_key = "3a50bc8cc38be8c5de9f3dc4799e6ef1"
+
+            # base URL
+            base_url = "http://api.openweathermap.org/data/2.5/weather?"
+
+            # City name
+            city_name = "Kurnool"
+
+            # complete URL address
+            complete_url = base_url + "appid=" + api_key + "&q=" + city_name
+
+            # get response from the API
+            response = requests.get(complete_url)
+
+            # get JSON data from the response
+            weather_data = json.loads(response.text)
+
+            # extract weather information
+            weather = weather_data["weather"][0]["description"]
+            temperature = weather_data["main"]["temp"]
+            humidity = weather_data["main"]["humidity"]
+
+            # convert temperature to Celsius
+            temperature = temperature - 273.15
+
+            # initialize text-to-speech engine
+            engine = pyttsx3.init()
+
+            # set speech rate
+            engine.setProperty("rate", 150)
+
+            # get today's date
+            today = datetime.datetime.today().strftime('%A, %B %d')
+
+            # create weather message
+            weather_message = f"Good morning! Today is {today}. The weather in {city_name} is {weather}. The temperature is {temperature:.2f} degrees Celsius, and the humidity is {humidity}%."
+
+            # say the weather message
+            engine.say(weather_message)
+            engine.runAndWait()
+
+
+        elif "brave" in data1:
+
+            brave_path = "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+            os.startfile(brave_path)
+            speechtx("Brave has been opened sir")
+        elif "facebook" in data1:
+            url = "https://www.facebook.com"
+            webbrowser.open(url)
+            speechtx("The facebook has been opened please loggin")
+        elif "whatsapp" in data1:
+            url = "https://web.whatsapp.com/"
+
+            # Open WhatsApp web in the default browser
+            webbrowser.open(url)
+            speechtx("The whatsapp web has been opened, my lord")
+
+
+
+
+
+
+        elif "notepad" in data1:
+            os.system("start notepad")
+            speechtx("Your Notepad has been opened sir.")
+        elif "Camera" in data1:
+
+            cap = cv2.VideoCapture(0)  # 0 for default camera
+
+            while True:
+                ret, frame = cap.read()
+                cv2.imshow('Camera', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+
+            cap.release()
+            cv2.destroyAllWindows()
+            speechtx("Your camera has been opened sir")
+        elif "screenshot" in data1:
+            screenshot = pyautogui.screenshot()
+            screenshot.save('screenshot.png')
+            speechtx("The screenshot has been taken sir")
+        elif "google" in data1:
+            url = 'https://www.google.com'
+            webbrowser.open(url)
+            speechtx("The google has been opened. Please select the default browser to navigate throught it")
+        elif "team" in data1:
+            speechtx("My team consist of umar farhan, somnath, suhail and aman")
+        elif 'settings' in data1:
+            os.system('start ms-settings:')
+            speechtx("settings has been opened sir")
+        elif 'email' in data1:
+            try:
+                speechtx("What should I do my lord")
+                content = sptext()
+                to = "finnumar@gmail.com"
+                sendEmail(to, content)
+                speechtx("Email has been sent successfully")
+            except Exception as e:
+                print(e)
+                speechtx("Sorry lord I am unable to send this email successfully")
+        elif 'gmail' in data1:
+            ob = smtplib.SMTP('smtp.gmail.com', 587)
+            ob.ehlo()
+            ob.starttls()
+            ob.login('ummarfarhan@hotmail.com', 'Raw@lasvegas2019')
+            subject = 'test python'
+            body = 'I love saoirse Ronan'
+            message = "subject: {}\n\n{}".format(subject, body)
+            listadd = ['finnumar@gmail.com',
+                       '19rua1a0532@gmail.com']
+            ob.sendmail('ummarfarhan@hotmail.com', listadd, message)
+            print("send mail")
+            ob.quit()
+
+        elif "request" in data1:
+            engine = pyttsx3.init()
+            r = sr.Recognizer()
+
+
+            def speak(text):
+                engine.say(text)
+                engine.runAndWait()
+
+
+            speak("Hello, I am Jarvis. How can I assist you?")
+
+            # Get user input
+            with sr.Microphone() as source:
+                r.adjust_for_ambient_noise(source)
+                print("Listening...")
+                audio = r.listen(source)
+                try:
+                    query = r.recognize_google(audio)
+                    print("You said: " + query)
+                except sr.UnknownValueError:
+                    query = input("Sorry, I did not understand. Please type your query: ")
+
+            # Search for the query on Wikipedia
+            try:
+                summary = wikipedia.summary(query, sentences=2)
+                print(summary)
+                speak(summary)
+            except wikipedia.exceptions.PageError:
+                print(f"No results found for {query}")
+                speak(f"No results found for {query}")
+        elif "youself" in data1:
+            speechtx(" Am an AI model sir created by satish sir students.")
+        elif "laptop" in data1:
+            # Open the "About PC" window
+            # Open the "About PC" window
+            os.system("ms-settings:about")
+
+            # Get the system specifications
+            system = platform.system()
+            if system == "Windows":
+                processor = platform.processor()
+                ram = round(int(os.popen('wmic memorychip get capacity').read().split()[1]) / (1024 ** 3))
+                disk = round(int(os.popen('wmic diskdrive get size').read().split()[1]) / (1024 ** 3))
+                graphics = platform.system() + ' ' + platform.version()
+            elif system == "Darwin":
+                processor = platform.processor()
+                ram = round(int(os.popen('sysctl -n hw.memsize').read()) / (1024 ** 3))
+                disk = round(int(os.popen("df -H / | awk 'NR==2 {print $2}'").read().strip()[:-1]))
+                graphics = platform.system() + ' ' + platform.mac_ver()[0]
+            elif system == "Linux":
+                processor = platform.processor()
+                ram = round(int(os.popen('cat /proc/meminfo | grep MemTotal').read().split()[1]) / 1024 ** 2)
+                disk = round(int(os.popen("df -BG / | awk 'NR==2 {print $2}'").read().strip()[:-1]))
+                graphics = platform.system() + ' ' + platform.version()
+
+            # Use pyttsx3 to speak the system specifications
+            engine = pyttsx3.init()
+            text = "Here are your system specifications. Processor: {}, RAM: {} gigabytes, Disk space: {} gigabytes, Graphics card: {}".format(
+                processor, ram, disk, graphics)
+            engine.say(text)
+            engine.runAndWait()
+
+            # Print the system specifications on the screen
+            print(text)
+        elif "exit" in data1:
+            speechtx("Thank you my lord")
+            break
+        time.sleep(4)
